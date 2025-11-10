@@ -1,0 +1,166 @@
+Build a fully working E-Commerce Website with the following requirements:
+
+✅ Project Requirements
+
+Main Features:
+
+Users should be able to:
+
+Explore products (products list page)
+
+View product details (single product page)
+
+Add products to shopping cart
+
+View and manage cart items (increase, decrease, remove)
+
+Website Requirements:
+
+Clean, modern, responsive UI
+
+Frontend must use:
+
+React.js (or Next.js, but prefer React.js)
+
+React Router for navigation
+
+State management for cart (Context API preferred)
+
+Backend Requirements:
+
+Node.js with Express.js
+
+REST APIs:
+
+GET /products
+
+GET /products/:id
+
+POST /cart/add
+
+DELETE /cart/remove/:id
+
+Database:
+
+MongoDB Atlas
+
+Create “products” collection with sample data
+
+✅ Sample Products Data (Must Exist in Code)
+
+Include at least 10 sample products such as:
+
+iPhone 14 Pro – ₹1,19,999 – Smartphone – 4.7⭐
+
+Samsung S23 Ultra – ₹1,09,999 – Smartphone – 4.8⭐
+
+MacBook Air M1 – ₹84,999 – Laptop – 4.9⭐
+
+Sony WH-1000XM5 Headphones – ₹29,999 – Audio – 4.6⭐
+
+Nike Air Max Shoes – ₹9,999 – Footwear – 4.5⭐
+
+Apple Watch Series 8 – ₹41,999 – Wearables – 4.6⭐
+
+JBL Bluetooth Speaker – ₹3,499 – Audio – 4.4⭐
+
+Dell Inspiron i5 Laptop – ₹54,999 – Laptop – 4.5⭐
+
+Adidas Running Shoes – ₹7,499 – Footwear – 4.3⭐
+
+Canon EOS 1500D Camera – ₹47,999 – Camera – 4.6⭐
+
+Each product should include:
+✅ Name
+✅ Price
+✅ Image URL
+✅ Category
+✅ Short description
+✅ Rating
+✅ Stock availability
+
+✅ Artifacts to Deliver
+
+You must return the following:
+
+✅ 1. Technical Architecture Documentation
+
+System architecture diagram
+
+High-level frontend/backend explanation
+
+Database schema design
+
+API endpoints with sample responses
+
+State management flow
+
+Deployment explanation
+
+✅ 2. FULL Codebase (copy-paste ready)
+
+Backend
+
+Express.js server
+
+Routes, controllers, models
+
+MongoDB Atlas connection
+
+Product seeding script
+
+Frontend
+
+React components
+
+Product list page
+
+Product details page
+
+Cart page
+
+API service functions
+
+CSS or Tailwind styling
+
+✅ 3. Prompts used to generate everything
+
+Categorized prompts for:
+
+Architecture
+
+Frontend
+
+Backend
+
+Database
+
+Deployment
+
+✅ 4. Installation Steps
+
+How to run backend
+
+How to run frontend
+
+How to connect MongoDB
+
+How to seed products
+
+✅ Output Format
+
+Return results in this exact order:
+
+✅ Technical architecture documentation
+
+✅ Folder & file structure
+
+✅ Backend code
+
+✅ Frontend code
+
+✅ MongoDB schema + seed data (with 10 products above)
+
+✅ Run & installation instructions
+
+✅ Prompts used (for reproducibility)
