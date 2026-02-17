@@ -1,0 +1,854 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Job Notification Tracker</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --bg-dark: #0f172a;
+            --bg-card: #1e293b;
+            --text: #f1f5f9;
+            --text-muted: #94a3b8;
+            --border: #334155;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg-dark);
+            color: var(--text);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        /* Navigation */
+        nav {
+            background: var(--bg-card);
+            border-bottom: 1px solid var(--border);
+            padding: 1rem 2rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        nav .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        nav h1 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--primary), #8b5cf6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        nav .nav-links {
+            display: flex;
+            gap: 1rem;
+        }
+
+        nav a {
+            color: var(--text-muted);
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            transition: all 0.2s;
+            font-weight: 500;
+        }
+
+        nav a:hover {
+            color: var(--text);
+            background: rgba(99, 102, 241, 0.1);
+        }
+
+        nav a.active {
+            color: var(--primary);
+            background: rgba(99, 102, 241, 0.15);
+        }
+
+        /* Main Content */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .page {
+            display: none;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        /* Card Styles */
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 1rem;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
+        }
+
+        .card-header {
+            margin-bottom: 1.5rem;
+        }
+
+        .card-title {
+            font-size: 1.75rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            color: var(--text);
+        }
+
+        .card-description {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+        }
+
+        /* Test Summary */
+        .test-summary {
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(139, 92, 246, 0.1));
+            border: 2px solid var(--primary);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        .test-summary h2 {
+            font-size: 2rem;
+            font-weight: 800;
+            margin-bottom: 0.5rem;
+        }
+
+        .test-summary .passed {
+            color: var(--success);
+            font-size: 3rem;
+            font-weight: 900;
+        }
+
+        .test-summary .total {
+            color: var(--text-muted);
+            font-size: 2rem;
+        }
+
+        .warning-box {
+            background: rgba(245, 158, 11, 0.1);
+            border: 1px solid var(--warning);
+            border-radius: 0.5rem;
+            padding: 1rem;
+            margin-top: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .warning-box::before {
+            content: "⚠️";
+            font-size: 1.5rem;
+        }
+
+        .warning-box p {
+            color: var(--warning);
+            font-weight: 600;
+            margin: 0;
+        }
+
+        /* Checklist Styles */
+        .checklist {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .checklist-item {
+            background: rgba(30, 41, 59, 0.5);
+            border: 1px solid var(--border);
+            border-radius: 0.75rem;
+            padding: 1.25rem;
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+
+        .checklist-item:hover {
+            background: rgba(30, 41, 59, 0.8);
+            border-color: var(--primary);
+        }
+
+        .checklist-item.checked {
+            background: rgba(16, 185, 129, 0.1);
+            border-color: var(--success);
+        }
+
+        .checkbox {
+            flex-shrink: 0;
+            width: 24px;
+            height: 24px;
+            border: 2px solid var(--border);
+            border-radius: 0.375rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-top: 0.125rem;
+        }
+
+        .checklist-item.checked .checkbox {
+            background: var(--success);
+            border-color: var(--success);
+        }
+
+        .checkbox::after {
+            content: "✓";
+            color: white;
+            font-weight: bold;
+            font-size: 16px;
+            display: none;
+        }
+
+        .checklist-item.checked .checkbox::after {
+            display: block;
+        }
+
+        .checklist-content {
+            flex: 1;
+        }
+
+        .checklist-title {
+            font-weight: 600;
+            font-size: 1.05rem;
+            margin-bottom: 0.25rem;
+            color: var(--text);
+        }
+
+        .checklist-item.checked .checklist-title {
+            color: var(--success);
+        }
+
+        /* Tooltip */
+        .tooltip-trigger {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 20px;
+            height: 20px;
+            background: rgba(99, 102, 241, 0.2);
+            border: 1px solid var(--primary);
+            border-radius: 50%;
+            color: var(--primary);
+            font-size: 0.75rem;
+            font-weight: 700;
+            cursor: help;
+            margin-left: 0.5rem;
+            position: relative;
+        }
+
+        .tooltip-content {
+            display: none;
+            position: absolute;
+            bottom: calc(100% + 8px);
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--bg-card);
+            border: 1px solid var(--primary);
+            border-radius: 0.5rem;
+            padding: 0.75rem 1rem;
+            width: 300px;
+            z-index: 100;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+        }
+
+        .tooltip-trigger:hover .tooltip-content {
+            display: block;
+        }
+
+        .tooltip-content::after {
+            content: "";
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            border: 6px solid transparent;
+            border-top-color: var(--primary);
+        }
+
+        .tooltip-text {
+            color: var(--text-muted);
+            font-size: 0.875rem;
+            line-height: 1.4;
+        }
+
+        /* Buttons */
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            border: none;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            text-decoration: none;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            transform: translateY(-1px);
+            box-shadow: 0 10px 20px -5px rgba(99, 102, 241, 0.4);
+        }
+
+        .btn-secondary {
+            background: rgba(71, 85, 105, 0.5);
+            color: var(--text);
+            border: 1px solid var(--border);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(71, 85, 105, 0.8);
+        }
+
+        .btn-danger {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--danger);
+            border: 1px solid var(--danger);
+        }
+
+        .btn-danger:hover {
+            background: rgba(239, 68, 68, 0.2);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .btn:disabled:hover {
+            transform: none;
+            box-shadow: none;
+        }
+
+        /* Lock Screen */
+        .lock-screen {
+            text-align: center;
+            padding: 4rem 2rem;
+        }
+
+        .lock-icon {
+            font-size: 5rem;
+            margin-bottom: 1.5rem;
+            opacity: 0.5;
+        }
+
+        .lock-screen h2 {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            color: var(--text);
+        }
+
+        .lock-screen p {
+            color: var(--text-muted);
+            font-size: 1.1rem;
+            margin-bottom: 2rem;
+        }
+
+        /* Action Bar */
+        .action-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 2rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--border);
+        }
+
+        /* Home Page Styles */
+        .home-hero {
+            text-align: center;
+            padding: 3rem 0;
+        }
+
+        .home-hero h2 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, var(--primary), #8b5cf6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .home-hero p {
+            color: var(--text-muted);
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .feature-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 1rem;
+            padding: 2rem;
+            text-align: center;
+            transition: all 0.2s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 25px -5px rgba(99, 102, 241, 0.3);
+            border-color: var(--primary);
+        }
+
+        .feature-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .feature-card h3 {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            color: var(--text);
+        }
+
+        .feature-card p {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+        }
+
+        @media (max-width: 768px) {
+            nav .container {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .container {
+                padding: 1rem;
+            }
+
+            .test-summary h2 {
+                font-size: 1.5rem;
+            }
+
+            .test-summary .passed {
+                font-size: 2rem;
+            }
+
+            .test-summary .total {
+                font-size: 1.5rem;
+            }
+
+            .tooltip-content {
+                width: 250px;
+            }
+
+            .action-bar {
+                flex-direction: column;
+                gap: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="container">
+            <h1>🚀 Job Notification Tracker</h1>
+            <div class="nav-links">
+                <a href="#/jt/home" class="nav-link">Home</a>
+                <a href="#/jt/07-test" class="nav-link">Test Checklist</a>
+                <a href="#/jt/08-ship" class="nav-link">Ship</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <!-- Home Page -->
+        <div id="page-home" class="page">
+            <div class="home-hero">
+                <h2>Welcome to Job Notification Tracker</h2>
+                <p>Track your job applications with confidence</p>
+            </div>
+            
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">✅</div>
+                    <h3>Test Checklist</h3>
+                    <p>Complete all test items before shipping</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🔒</div>
+                    <h3>Ship Lock</h3>
+                    <p>Ensure quality with locked shipping until tests pass</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">💾</div>
+                    <h3>Persistent State</h3>
+                    <p>Your test progress is saved automatically</p>
+                </div>
+            </div>
+
+            <div class="card" style="margin-top: 2rem;">
+                <div class="card-header">
+                    <h3 class="card-title">Getting Started</h3>
+                    <p class="card-description">Follow these steps to ensure your application is ready to ship</p>
+                </div>
+                <ol style="color: var(--text-muted); padding-left: 1.5rem;">
+                    <li style="margin-bottom: 0.5rem;">Navigate to the Test Checklist page</li>
+                    <li style="margin-bottom: 0.5rem;">Complete all 10 test items</li>
+                    <li style="margin-bottom: 0.5rem;">Verify each item by checking it off</li>
+                    <li style="margin-bottom: 0.5rem;">Once all tests pass, proceed to Ship</li>
+                </ol>
+            </div>
+        </div>
+
+        <!-- Test Page -->
+        <div id="page-test" class="page">
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">Test Checklist</h2>
+                    <p class="card-description">Complete all test items to unlock shipping</p>
+                </div>
+
+                <div class="test-summary">
+                    <h2>Tests Passed</h2>
+                    <div>
+                        <span class="passed" id="passed-count">0</span>
+                        <span class="total"> / 10</span>
+                    </div>
+                    <div id="warning-message" class="warning-box" style="display: none;">
+                        <p>⚠️ Resolve all issues before shipping.</p>
+                    </div>
+                </div>
+
+                <div class="checklist" id="checklist">
+                    <!-- Checklist items will be inserted here by JavaScript -->
+                </div>
+
+                <div class="action-bar">
+                    <button class="btn btn-danger" id="reset-btn">
+                        <span>🔄</span>
+                        Reset Test Status
+                    </button>
+                    <a href="#/jt/08-ship" class="btn btn-primary" id="proceed-btn" disabled>
+                        <span>Continue to Ship</span>
+                        <span>→</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Ship Page -->
+        <div id="page-ship" class="page">
+            <div class="card">
+                <div id="ship-locked" class="lock-screen">
+                    <div class="lock-icon">🔒</div>
+                    <h2>Shipping Locked</h2>
+                    <p>Complete all test checklist items to unlock shipping.</p>
+                    <a href="#/jt/07-test" class="btn btn-primary">
+                        <span>←</span>
+                        Go to Test Checklist
+                    </a>
+                </div>
+
+                <div id="ship-unlocked" style="display: none;">
+                    <div class="card-header">
+                        <h2 class="card-title">🎉 Ready to Ship!</h2>
+                        <p class="card-description">All tests have passed. Your application is ready to ship.</p>
+                    </div>
+
+                    <div style="background: rgba(16, 185, 129, 0.1); border: 2px solid var(--success); border-radius: 1rem; padding: 2rem; text-align: center; margin: 2rem 0;">
+                        <div style="font-size: 4rem; margin-bottom: 1rem;">✅</div>
+                        <h3 style="font-size: 1.5rem; font-weight: 700; margin-bottom: 0.5rem; color: var(--success);">All Systems Go!</h3>
+                        <p style="color: var(--text-muted);">Your application has passed all quality checks.</p>
+                    </div>
+
+                    <div class="feature-grid" style="margin-top: 2rem;">
+                        <div class="feature-card">
+                            <div class="feature-icon">✅</div>
+                            <h3>All Tests Passed</h3>
+                            <p>10/10 test items completed</p>
+                        </div>
+                        <div class="feature-card">
+                            <div class="feature-icon">🚀</div>
+                            <h3>Ready for Deployment</h3>
+                            <p>No issues detected</p>
+                        </div>
+                        <div class="feature-card">
+                            <div class="feature-icon">🎯</div>
+                            <h3>Quality Assured</h3>
+                            <p>All standards met</p>
+                        </div>
+                    </div>
+
+                    <div class="action-bar">
+                        <a href="#/jt/07-test" class="btn btn-secondary">
+                            <span>←</span>
+                            Back to Tests
+                        </a>
+                        <button class="btn btn-primary" onclick="alert('🚀 Shipping initiated! Your application is being deployed.')">
+                            <span>🚀</span>
+                            Ship Now
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Test checklist data
+        const testItems = [
+            {
+                id: 'test-1',
+                title: 'Preferences persist after refresh',
+                tooltip: 'Test: Set preferences, refresh the page, and verify that all preference settings remain unchanged.'
+            },
+            {
+                id: 'test-2',
+                title: 'Match score calculates correctly',
+                tooltip: 'Test: Create multiple test cases with known inputs and verify the match score calculation produces expected results.'
+            },
+            {
+                id: 'test-3',
+                title: '"Show only matches" toggle works',
+                tooltip: 'Test: Toggle the "Show only matches" filter on and off, verify the list updates correctly to show/hide non-matching items.'
+            },
+            {
+                id: 'test-4',
+                title: 'Save job persists after refresh',
+                tooltip: 'Test: Save a job, refresh the page, and verify the job remains in your saved list with all details intact.'
+            },
+            {
+                id: 'test-5',
+                title: 'Apply opens in new tab',
+                tooltip: 'Test: Click the Apply button and verify it opens the application page in a new browser tab without leaving the tracker.'
+            },
+            {
+                id: 'test-6',
+                title: 'Status update persists after refresh',
+                tooltip: 'Test: Update a job status (e.g., Applied, Interview), refresh the page, and verify the status update is preserved.'
+            },
+            {
+                id: 'test-7',
+                title: 'Status filter works correctly',
+                tooltip: 'Test: Apply different status filters and verify only jobs with matching statuses are displayed in the list.'
+            },
+            {
+                id: 'test-8',
+                title: 'Digest generates top 10 by score',
+                tooltip: 'Test: Generate a digest and verify it displays exactly the top 10 jobs ranked by match score in descending order.'
+            },
+            {
+                id: 'test-9',
+                title: 'Digest persists for the day',
+                tooltip: 'Test: Generate a digest, close and reopen the app, and verify the same digest is shown. Test it resets at midnight.'
+            },
+            {
+                id: 'test-10',
+                title: 'No console errors on main pages',
+                tooltip: 'Test: Open browser DevTools console, navigate through all main pages, and verify no errors or warnings appear.'
+            }
+        ];
+
+        // State management
+        let testState = {};
+
+        // Load state from localStorage
+        function loadState() {
+            const saved = localStorage.getItem('jobTrackerTestState');
+            if (saved) {
+                testState = JSON.parse(saved);
+            } else {
+                // Initialize all tests as unchecked
+                testItems.forEach(item => {
+                    testState[item.id] = false;
+                });
+            }
+        }
+
+        // Save state to localStorage
+        function saveState() {
+            localStorage.setItem('jobTrackerTestState', JSON.stringify(testState));
+        }
+
+        // Render checklist
+        function renderChecklist() {
+            const checklist = document.getElementById('checklist');
+            checklist.innerHTML = '';
+
+            testItems.forEach(item => {
+                const isChecked = testState[item.id] || false;
+                const itemEl = document.createElement('div');
+                itemEl.className = `checklist-item ${isChecked ? 'checked' : ''}`;
+                itemEl.dataset.id = item.id;
+                
+                itemEl.innerHTML = `
+                    <div class="checkbox"></div>
+                    <div class="checklist-content">
+                        <div class="checklist-title">
+                            ${item.title}
+                            <span class="tooltip-trigger">
+                                ?
+                                <div class="tooltip-content">
+                                    <div class="tooltip-text">${item.tooltip}</div>
+                                </div>
+                            </span>
+                        </div>
+                    </div>
+                `;
+
+                itemEl.addEventListener('click', (e) => {
+                    // Don't toggle if clicking on tooltip
+                    if (e.target.closest('.tooltip-trigger')) {
+                        return;
+                    }
+                    toggleTest(item.id);
+                });
+
+                checklist.appendChild(itemEl);
+            });
+
+            updateSummary();
+        }
+
+        // Toggle test item
+        function toggleTest(id) {
+            testState[id] = !testState[id];
+            saveState();
+            renderChecklist();
+        }
+
+        // Update test summary
+        function updateSummary() {
+            const passedCount = Object.values(testState).filter(v => v).length;
+            document.getElementById('passed-count').textContent = passedCount;
+
+            const warningMsg = document.getElementById('warning-message');
+            const proceedBtn = document.getElementById('proceed-btn');
+
+            if (passedCount < 10) {
+                warningMsg.style.display = 'flex';
+                proceedBtn.disabled = true;
+            } else {
+                warningMsg.style.display = 'none';
+                proceedBtn.disabled = false;
+            }
+
+            updateShipPage();
+        }
+
+        // Update ship page based on test completion
+        function updateShipPage() {
+            const passedCount = Object.values(testState).filter(v => v).length;
+            const allPassed = passedCount === 10;
+
+            const lockedEl = document.getElementById('ship-locked');
+            const unlockedEl = document.getElementById('ship-unlocked');
+
+            if (allPassed) {
+                lockedEl.style.display = 'none';
+                unlockedEl.style.display = 'block';
+            } else {
+                lockedEl.style.display = 'block';
+                unlockedEl.style.display = 'none';
+            }
+        }
+
+        // Reset all tests
+        function resetTests() {
+            if (confirm('Are you sure you want to reset all test status? This will uncheck all items.')) {
+                testItems.forEach(item => {
+                    testState[item.id] = false;
+                });
+                saveState();
+                renderChecklist();
+            }
+        }
+
+        // Router
+        function navigate() {
+            const hash = window.location.hash || '#/jt/home';
+            const pages = document.querySelectorAll('.page');
+            const navLinks = document.querySelectorAll('.nav-link');
+
+            // Hide all pages
+            pages.forEach(page => page.classList.remove('active'));
+
+            // Remove active class from all nav links
+            navLinks.forEach(link => link.classList.remove('active'));
+
+            // Show the appropriate page
+            if (hash.includes('/jt/home')) {
+                document.getElementById('page-home').classList.add('active');
+                document.querySelector('a[href="#/jt/home"]')?.classList.add('active');
+            } else if (hash.includes('/jt/07-test')) {
+                document.getElementById('page-test').classList.add('active');
+                document.querySelector('a[href="#/jt/07-test"]')?.classList.add('active');
+                renderChecklist();
+            } else if (hash.includes('/jt/08-ship')) {
+                document.getElementById('page-ship').classList.add('active');
+                document.querySelector('a[href="#/jt/08-ship"]')?.classList.add('active');
+                updateShipPage();
+            }
+        }
+
+        // Initialize app
+        function init() {
+            loadState();
+            navigate();
+
+            // Set up router
+            window.addEventListener('hashchange', navigate);
+
+            // Set up reset button
+            document.getElementById('reset-btn').addEventListener('click', resetTests);
+
+            // Start on home if no hash
+            if (!window.location.hash) {
+                window.location.hash = '#/jt/home';
+            }
+        }
+
+        // Start the app when DOM is ready
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', init);
+        } else {
+            init();
+        }
+    </script>
+</body>
+</html>
