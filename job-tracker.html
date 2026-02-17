@@ -550,7 +550,7 @@
                         <span class="total"> / 10</span>
                     </div>
                     <div id="warning-message" class="warning-box" style="display: none;">
-                        <p>⚠️ Resolve all issues before shipping.</p>
+                        <p>Resolve all issues before shipping.</p>
                     </div>
                 </div>
 
@@ -711,7 +711,7 @@
             checklist.innerHTML = '';
 
             testItems.forEach(item => {
-                const isChecked = testState[item.id] || false;
+                const isChecked = testState[item.id];
                 const itemEl = document.createElement('div');
                 itemEl.className = `checklist-item ${isChecked ? 'checked' : ''}`;
                 itemEl.dataset.id = item.id;
